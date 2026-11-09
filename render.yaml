@@ -1,0 +1,28 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# 1) Push this whole folder to a Git repo (GitHub/GitLab/Bitbucket)
+# 2) Render Dashboard → New → Blueprint → pick the repo
+# 3) Deploy (public URL is auto-detected)
+services:
+  - type: web
+    name: whalechat
+    runtime: node
+    plan: starter            # persistent disk requires a paid instance type
+    region: oregon
+    branch: main
+    autoDeployTrigger: commit
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: DATA_DIR
+        value: /var/data
+      # PUBLIC_URL is optional: the server auto-detects https://<host> from each
+      # request. Set it only when you attach a custom domain.
+      - key: VAPID_EMAIL
+        value: support@whalechat.app
+    disk:
+      name: whalechat-data
+      mountPath: /var/data
+      sizeGB: 1
